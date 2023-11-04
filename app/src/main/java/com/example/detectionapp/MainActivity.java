@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     maxPos = i;
                 }
             }
-            String[] classes = {"Apple", "Banana", "Orange"};
+            String[] classes = {"Apple", "Banana","Eggplant","Lettuce", "Orange"};
             result.setText(classes[maxPos]);
 
             if (mIsInit) {
