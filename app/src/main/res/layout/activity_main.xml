@@ -12,6 +12,7 @@
         android:layout_above="@id/button2"
         android:layout_centerInParent="true"
         android:text="Take Picture"
+        android:backgroundTint="#8B008B"
         android:textAllCaps="false"
         android:textSize="21sp"
         android:textStyle="bold" />
@@ -22,6 +23,7 @@
         android:id="@+id/button2"
         android:text="Launch Gallery"
         android:textAllCaps="false"
+        android:backgroundTint="#8B008B"
         android:layout_alignParentBottom="true"
         android:textSize="21sp"
         android:textStyle="bold"
