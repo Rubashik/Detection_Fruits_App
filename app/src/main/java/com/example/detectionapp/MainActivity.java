@@ -27,7 +27,9 @@ import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
@@ -36,8 +38,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private boolean mIsInit;
     Button camera, gallery;
     ImageView imageView;
-    TextView result;
+    TextView result, confidencesView;
     int imageSize = 32;
+    Classifier classifier = new Classifier();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         result = findViewById(R.id.result);
         imageView = findViewById(R.id.imageView);
+        confidencesView = findViewById(R.id.confidenceTextView);
 
 
         camera.setOnClickListener(new View.OnClickListener() {
@@ -72,59 +76,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         });
     }
 
-    public void classifyImage(Bitmap image){
-        try {
-            Model model = Model.newInstance(getApplicationContext());
-
-            // Creates inputs for reference.
-            TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 32, 32, 3}, DataType.FLOAT32);
-            ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * imageSize * imageSize * 3);
-            byteBuffer.order(ByteOrder.nativeOrder());
-
-            int[] intValues = new int[imageSize * imageSize];
-            image.getPixels(intValues, 0, image.getWidth(), 0, 0, image.getWidth(), image.getHeight());
-            int pixel = 0;
-            //iterate over each pixel and extract R, G, and B values. Add those values individually to the byte buffer.
-            for(int i = 0; i < imageSize; i ++){
-                for(int j = 0; j < imageSize; j++){
-                    int val = intValues[pixel++]; // RGB
-                    byteBuffer.putFloat(((val >> 16) & 0xFF) * (1.f / 1));
-                    byteBuffer.putFloat(((val >> 8) & 0xFF) * (1.f / 1));
-                    byteBuffer.putFloat((val & 0xFF) * (1.f / 1));
-                }
-            }
-
-            inputFeature0.loadBuffer(byteBuffer);
-
-            // Runs model inference and gets result.
-            Model.Outputs outputs = model.process(inputFeature0);
-            TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
-
-            float[] confidences = outputFeature0.getFloatArray();
-            // find the index of the class with the biggest confidence.
-            int maxPos = 0;
-            float maxConfidence = 0;
-            for (int i = 0; i < confidences.length; i++) {
-                if (confidences[i] > maxConfidence) {
-                    maxConfidence = confidences[i];
-                    maxPos = i;
-                }
-            }
-            String[] classes = {"Apple", "Banana","Eggplant","Lettuce", "Orange"};
-            result.setText(classes[maxPos]);
-
-            if (mIsInit) {
-                String textToSpeech = (String) result.getText();
-                mTextToSpeech.speak(textToSpeech, TextToSpeech.QUEUE_FLUSH, null, "id1");
-            }
-
-            // Releases model resources if no longer used.
-            model.close();
-        } catch (IOException e) {
-            // TODO Handle the exception
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(resultCode == RESULT_OK){
@@ -135,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 imageView.setImageBitmap(image);
 
                 image = Bitmap.createScaledBitmap(image, imageSize, imageSize, false);
-                classifyImage(image);
+                result.setText(classifier.classifyImage(image, getApplicationContext()));
             }else{
                 Uri dat = data.getData();
                 Bitmap image = null;
@@ -147,7 +98,24 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 imageView.setImageBitmap(image);
 
                 image = Bitmap.createScaledBitmap(image, imageSize, imageSize, false);
-                classifyImage(image);
+                result.setText(classifier.classifyImage(image, getApplicationContext()));
+            }
+
+            HashMap<String, Float> confidencesMap = (HashMap<String, Float>) classifier.getConfidences();
+            StringBuilder stringBuilder = new StringBuilder();
+
+            for (Map.Entry<String, Float> entry : confidencesMap.entrySet()) {
+                String fruit = entry.getKey();
+                float confidence = entry.getValue();
+//                String formattedString = String.format("%.1f", confidence*100);
+
+                stringBuilder.append(fruit).append(": ").append(confidence).append("%\n");
+                confidencesView.setText(stringBuilder.toString());
+            }
+
+            if (mIsInit) {
+                String textToSpeech = (String) result.getText();
+                mTextToSpeech.speak(textToSpeech, TextToSpeech.QUEUE_FLUSH, null, "id1");
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -166,4 +134,5 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             mIsInit = false;
         }
     }
+
 }
