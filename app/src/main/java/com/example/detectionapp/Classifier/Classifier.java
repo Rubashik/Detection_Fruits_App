@@ -1,4 +1,4 @@
-package com.example.detectionapp;
+package com.example.detectionapp.Classifier;
 
 import android.content.Context;
 import android.graphics.Bitmap;
