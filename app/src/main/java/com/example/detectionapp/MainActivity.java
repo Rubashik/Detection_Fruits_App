@@ -2,6 +2,8 @@ package com.example.detectionapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -9,9 +11,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.detectionapp.Classifier.ClassifierActivity;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.Locale;
 
-    Button classify_btn;
+public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener{
+
+    private TextToSpeech mTextToSpeech;
+    private boolean mIsInit;
+    Button classify_btn, recognize_btn;
+
+
 
 
     @Override
@@ -19,7 +27,27 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mTextToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int i) {
+                if (i == TextToSpeech.SUCCESS) {
+                    Locale locale = new Locale("en");
+                    int result = mTextToSpeech.setLanguage(locale);
+                    if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                        mIsInit = false;
+                    } else {
+                        mIsInit = true;
+                        String textToSpeech = "Hi. If you want to classify image press the left side of your phone. If you want to recognize press the right side.";
+                        mTextToSpeech.speak(textToSpeech, TextToSpeech.QUEUE_FLUSH, null, "id1");
+                    }
+                } else {
+                    Log.e("TextToSpeech", "Initialization failed");
+                    mIsInit = false;
+                }
+            }
+        });
         classify_btn = findViewById(R.id.classify_btn);
+        recognize_btn = findViewById(R.id.recognize_btn_btn);
 
     }
 
@@ -27,6 +55,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        recognize_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            }
+        });
         classify_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -34,5 +67,20 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(classifyIntent);
             }
         });
+    }
+
+    public void onInit(int status) {
+        if (status == TextToSpeech.SUCCESS) {
+            Locale locale = new Locale("en");
+            int result = mTextToSpeech.setLanguage(locale);
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                mIsInit = false;
+            } else {
+                mIsInit = true;
+            }
+        } else {
+            Log.e("TextToSpeech", "Initialization failed");
+            mIsInit = false;
+        }
     }
 }

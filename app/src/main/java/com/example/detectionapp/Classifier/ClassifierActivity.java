@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.speech.tts.TextToSpeech;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -125,6 +126,7 @@ public class ClassifierActivity extends AppCompatActivity implements TextToSpeec
                 mIsInit = true;
             }
         } else {
+            Log.e("TextToSpeech", "Initialization failed");
             mIsInit = false;
         }
     }

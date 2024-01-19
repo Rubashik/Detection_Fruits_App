@@ -8,10 +8,23 @@
 
     <Button
         android:id="@+id/classify_btn"
-        android:layout_width="200dp"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="match_parent"
         android:background="@drawable/button_background"
-        android:text="HI"
+        android:text="🍋\nC\nL\nA\nS\nS\nI\nF\nI\nE\nR\n🥦"
+        android:textSize="45dp"
+        />
+
+    <Button
+        android:id="@+id/recognize_btn_btn"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:background="@drawable/button_background"
+        android:text="🍒\nR\nE\nC\nO\nG\nN\nI\nZ\nE\nR\n🍌"
+        android:gravity="center"
+        android:textSize="45dp"
         />
 
 
