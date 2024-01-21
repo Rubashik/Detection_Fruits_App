@@ -96,17 +96,8 @@ public class ClassifierActivity extends AppCompatActivity implements TextToSpeec
                 result.setText(classifier.classifyImage(image, getApplicationContext()));
             }
 
-            HashMap<String, Float> confidencesMap = (HashMap<String, Float>) classifier.getConfidences();
-            StringBuilder stringBuilder = new StringBuilder();
-
-            for (Map.Entry<String, Float> entry : confidencesMap.entrySet()) {
-                String fruit = entry.getKey();
-                float confidence = entry.getValue();
-//                String formattedString = String.format("%.1f", confidence*100);
-
-                stringBuilder.append(fruit).append(": ").append(confidence).append("%\n");
-                confidencesView.setText(stringBuilder.toString());
-            }
+            String confidenceString = classifier.getConfidencesString();
+            confidencesView.setText(confidenceString);
 
             if (mIsInit) {
                 String textToSpeech = (String) result.getText();

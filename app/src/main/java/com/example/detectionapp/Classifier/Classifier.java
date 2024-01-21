@@ -20,6 +20,7 @@ public class Classifier {
     private int imageSize = 32;
     private String[] classes = {"Apple", "Banana","Eggplant","Lettuce", "Orange"};
     private TensorBuffer outputFeature0;
+    private String confidencesString = "";
 
 
 
@@ -61,9 +62,13 @@ public class Classifier {
                     maxPos = i;
                 }
             }
+
+            for(int i = 0; i < classes.length; i++){
+                confidencesString += String.format("%s: %.1f%%\n", classes[i], confidences[i] * 100);
+            }
             // Releases model resources if no longer used.
             model.close();
-            return classes[maxPos];
+            return classes[maxPos].toString();
 
 
         } catch (IOException e) {
@@ -72,15 +77,7 @@ public class Classifier {
     return null;
     }
 
-    public Map<String, Float> getConfidences(){
-        float [] confidences = outputFeature0.getFloatArray();
-
-        HashMap<String, Float> outputMap = new HashMap<>();
-
-        for (int i = 0; i < confidences.length; i++) {
-            outputMap.put(classes[i], confidences[i]);
-        }
-        return outputMap;
+    public String getConfidencesString() {
+        return confidencesString;
     }
-
 }

@@ -10,6 +10,7 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.detectionapp.Classifier.ClassifierActivity;
+import com.example.detectionapp.Recognizer.RecognizerActivity;
 
 import java.util.Locale;
 
@@ -58,6 +59,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         recognize_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent recognizerIntent = new Intent(MainActivity.this, RecognizerActivity.class);
+                startActivity(recognizerIntent);
             }
         });
         classify_btn.setOnClickListener(new View.OnClickListener() {
