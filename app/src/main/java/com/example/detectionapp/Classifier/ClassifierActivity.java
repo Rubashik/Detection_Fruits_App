@@ -34,7 +34,7 @@ public class ClassifierActivity extends AppCompatActivity implements TextToSpeec
     Button camera, gallery;
     ImageView imageView;
     TextView result, confidencesView;
-    int imageSize = 32;
+    int imageSize = 224;
     Classifier classifier = new Classifier();
 
     @Override
