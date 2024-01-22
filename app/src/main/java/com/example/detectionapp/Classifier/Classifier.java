@@ -4,8 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.speech.tts.TextToSpeech;
 
-import com.example.detectionapp.ml.Model;
-import com.example.detectionapp.ml.ModelUnquant;
+import com.example.detectionapp.ml.Lastmodel;
 
 import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
@@ -18,9 +17,8 @@ import java.util.Map;
 
 public class Classifier {
 
-    private int imageSize = 224;
-    private String[] classes = {"Avocado", "Potato","Apple","Lemon", "Onion",
-            "Mandarin", "Lettuce", "Eggplant", "Banana", "Orange"};
+    private int imageSize = 32;
+    private String[] classes = {"apple", "avocado" , "banana", "eggplant", "lettuce", "onion", "orange", "walnut"};
     private TensorBuffer outputFeature0;
     private String confidencesString = "";
 
@@ -28,10 +26,10 @@ public class Classifier {
 
     public String classifyImage(Bitmap image, Context context){
         try {
-            ModelUnquant model = ModelUnquant.newInstance(context);
+            Lastmodel model = Lastmodel.newInstance(context);
 
             // Creates inputs for reference.
-            TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 224, 224, 3}, DataType.FLOAT32);
+            TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 32, 32, 3}, DataType.FLOAT32);
             ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * imageSize * imageSize * 3);
             byteBuffer.order(ByteOrder.nativeOrder());
 
@@ -51,7 +49,7 @@ public class Classifier {
             inputFeature0.loadBuffer(byteBuffer);
 
             // Runs model inference and gets result.
-            ModelUnquant.Outputs outputs = model.process(inputFeature0);
+            Lastmodel.Outputs outputs = model.process(inputFeature0);
             outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
 
             float[] confidences = outputFeature0.getFloatArray();
