@@ -24,13 +24,16 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
 public class RecognizerActivity extends CameraActivity{
 
-
+    private Mat mRgba;
+    private Mat mGray;
     private CameraBridgeViewBase cameraBridgeViewBase;
+    private ObjectDetectorClass objectDetectorClass;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,23 +47,38 @@ public class RecognizerActivity extends CameraActivity{
         cameraBridgeViewBase.setCvCameraViewListener(new CameraBridgeViewBase.CvCameraViewListener2() {
             @Override
             public void onCameraViewStarted(int width, int height) {
-
+                mRgba=new Mat(height,width, CvType.CV_8UC4);
+                mGray =new Mat(height,width,CvType.CV_8UC1);
             }
 
             @Override
             public void onCameraViewStopped() {
-
+                mRgba.release();
             }
 
             @Override
             public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-                return inputFrame.rgba();
+                mRgba=inputFrame.rgba();
+                mGray=inputFrame.gray();
+                // Before watching this video please watch previous video of loading tensorflow lite model
+
+                // now call that function
+                Mat out=new Mat();
+                out=objectDetectorClass.recognizeImage(mRgba);
+
+                return out;
             }
         });
-
-
         if(OpenCVLoader.initDebug()){
             cameraBridgeViewBase.enableView();
+        }
+
+        try {
+            objectDetectorClass = new ObjectDetectorClass(getAssets(), "RecognitionModel.tflite", 320);
+            Log.d("MainActivity", "Model successfully loaded");
+        } catch (IOException e) {
+            Log.d("MainActivity", "Model getting some error");
+            e.printStackTrace();
         }
     }
 
@@ -74,5 +92,4 @@ public class RecognizerActivity extends CameraActivity{
             requestPermissions(new String[]{Manifest.permission.CAMERA}, 101);
         }
     }
-
 }

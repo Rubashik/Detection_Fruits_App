@@ -24,6 +24,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -44,7 +45,7 @@ public class ObjectDetectorClass {
     private int height=0;
     private  int width=0;
 
-    ObjectDetectorClass(AssetManager assetManager,String modelPath, String labelPath,int inputSize) throws IOException{
+    ObjectDetectorClass(AssetManager assetManager,String modelPath,int inputSize) throws IOException{
         INPUT_SIZE=inputSize;
         // use to define gpu or cpu // no. of threads
         Interpreter.Options options=new Interpreter.Options();
@@ -54,7 +55,7 @@ public class ObjectDetectorClass {
         // loading model
         interpreter=new Interpreter(loadModelFile(assetManager,modelPath),options);
         // load labelmap
-        labelList=loadLabelList(assetManager,labelPath);
+        labelList = new ArrayList<>(Arrays.asList("potato","capsicum","garlic","tomato", "onion"));
 
 
     }
