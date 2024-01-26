@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                         mIsInit = false;
                     } else {
                         mIsInit = true;
-                        String textToSpeech = "Hi. If you want to classify image press the left side of your phone. If you want to recognize press the right side.";
+                        String textToSpeech = "Main Page. If you want to classify image press the left side of screen. If you want to recognize - press the right side.";
                         mTextToSpeech.speak(textToSpeech, TextToSpeech.QUEUE_FLUSH, null, "id1");
                     }
                 } else {
@@ -68,6 +68,55 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             public void onClick(View view) {
                 Intent classifyIntent = new Intent(MainActivity.this, ClassifierActivity.class);
                 startActivity(classifyIntent);
+            }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mTextToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int i) {
+                if (i == TextToSpeech.SUCCESS) {
+                    Locale locale = new Locale("en");
+                    int result = mTextToSpeech.setLanguage(locale);
+                    if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                        mIsInit = false;
+                    } else {
+                        mIsInit = true;
+                        String textToSpeech = "Main Page. If you want to classify image press the left side of screen. If you want to recognize - press the right side.";
+                        mTextToSpeech.speak(textToSpeech, TextToSpeech.QUEUE_FLUSH, null, "id1");
+                    }
+                } else {
+                    Log.e("TextToSpeech", "Initialization failed");
+                    mIsInit = false;
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+
+        mTextToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int i) {
+                if (i == TextToSpeech.SUCCESS) {
+                    Locale locale = new Locale("en");
+                    int result = mTextToSpeech.setLanguage(locale);
+                    if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                        mIsInit = false;
+                    } else {
+                        mIsInit = true;
+                        String textToSpeech = "Main Page. If you want to classify image press the left side of screen. If you want to recognize - press the right side.";
+                        mTextToSpeech.speak(textToSpeech, TextToSpeech.QUEUE_FLUSH, null, "id1");
+                    }
+                } else {
+                    Log.e("TextToSpeech", "Initialization failed");
+                    mIsInit = false;
+                }
             }
         });
     }

@@ -44,6 +44,7 @@ public class ObjectDetectorClass {
     private GpuDelegate gpuDelegate;
     private int height=0;
     private  int width=0;
+    private String predictedObject;
 
     ObjectDetectorClass(AssetManager assetManager,String modelPath,int inputSize) throws IOException{
         INPUT_SIZE=inputSize;
@@ -155,8 +156,7 @@ public class ObjectDetectorClass {
             // define threshold for score
 
             // Here you can change threshold according to your model
-            // Now we will do some change to improve app
-            if(score_value>0.5){
+            if(score_value>0.88){
                 Object box1=Array.get(Array.get(value,0),i);
                 // we are multiplying it with Original height and width of frame
 
@@ -168,7 +168,8 @@ public class ObjectDetectorClass {
                 Imgproc.rectangle(rotated_mat_image,new Point(left,top),new Point(right,bottom),new Scalar(0, 255, 0, 255),2);
                 // write text on frame
                 // string of class name of object  // starting point                         // color of text           // size of text
-                Imgproc.putText(rotated_mat_image,labelList.get((int) class_value),new Point(left,top),3,1,new Scalar(255, 0, 0, 255),2);
+                predictedObject = labelList.get((int) class_value);
+                Imgproc.putText(rotated_mat_image,predictedObject,new Point(left,top),3,1,new Scalar(255, 0, 0, 255),2);
             }
 
         }
@@ -222,5 +223,9 @@ public class ObjectDetectorClass {
             }
         }
         return byteBuffer;
+    }
+
+    public String getPredictedObject() {
+        return predictedObject;
     }
 }

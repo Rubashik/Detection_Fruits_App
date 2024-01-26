@@ -50,6 +50,26 @@ public class ClassifierActivity extends AppCompatActivity implements TextToSpeec
         imageView = findViewById(R.id.imageView);
         confidencesView = findViewById(R.id.confidenceTextView);
 
+        mTextToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int i) {
+                if (i == TextToSpeech.SUCCESS) {
+                    Locale locale = new Locale("en");
+                    int result = mTextToSpeech.setLanguage(locale);
+                    if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                        mIsInit = false;
+                    } else {
+                        mIsInit = true;
+                        String textToSpeech = "You opened the classifier! If you want to take picture press the bottom-left side of screen. If you want to pick picture from gallery - press the bottom-right side.";
+                        mTextToSpeech.speak(textToSpeech, TextToSpeech.QUEUE_FLUSH, null, "id1");
+                    }
+                } else {
+                    Log.e("TextToSpeech", "Initialization failed");
+                    mIsInit = false;
+                }
+            }
+        });
+
 
         camera.setOnClickListener(new View.OnClickListener() {
             @Override

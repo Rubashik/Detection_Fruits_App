@@ -4,7 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.speech.tts.TextToSpeech;
 
-import com.example.detectionapp.ml.Lastmodel;
+import com.example.detectionapp.ml.ClassificationModel;
 
 import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
@@ -12,6 +12,7 @@ import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,7 +27,7 @@ public class Classifier {
 
     public String classifyImage(Bitmap image, Context context){
         try {
-            Lastmodel model = Lastmodel.newInstance(context);
+            ClassificationModel model = ClassificationModel.newInstance(context);
 
             // Creates inputs for reference.
             TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 32, 32, 3}, DataType.FLOAT32);
@@ -49,7 +50,7 @@ public class Classifier {
             inputFeature0.loadBuffer(byteBuffer);
 
             // Runs model inference and gets result.
-            Lastmodel.Outputs outputs = model.process(inputFeature0);
+            ClassificationModel.Outputs outputs = model.process(inputFeature0);
             outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
 
             float[] confidences = outputFeature0.getFloatArray();
@@ -63,7 +64,9 @@ public class Classifier {
                 }
             }
 
-            for(int i = 0; i < classes.length; i++){
+            Arrays.sort(confidences);
+
+            for(int i = 0; i < 3; i++){
                 confidencesString += String.format("%s: %.1f%%\n", classes[i], confidences[i] * 100);
             }
             // Releases model resources if no longer used.

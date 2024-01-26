@@ -2,18 +2,12 @@ package com.example.detectionapp.Recognizer;
 
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
-import android.view.SurfaceView;
-import android.view.Window;
-import android.view.WindowManager;
 
 import com.example.detectionapp.R;
 
@@ -22,18 +16,20 @@ import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.imgproc.Imgproc;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
-public class RecognizerActivity extends CameraActivity{
+public class RecognizerActivity extends CameraActivity implements TextToSpeech.OnInitListener{
 
     private Mat mRgba;
     private Mat mGray;
     private CameraBridgeViewBase cameraBridgeViewBase;
     private ObjectDetectorClass objectDetectorClass;
+    private TextToSpeech mTextToSpeech;
+    private boolean mIsInit;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,6 +39,26 @@ public class RecognizerActivity extends CameraActivity{
         getPermission();
 
         cameraBridgeViewBase = findViewById(R.id.cameraView);
+
+        mTextToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int i) {
+                if (i == TextToSpeech.SUCCESS) {
+                    Locale locale = new Locale("en");
+                    int result = mTextToSpeech.setLanguage(locale);
+                    if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                        mIsInit = false;
+                    } else {
+                        mIsInit = true;
+                        String textToSpeech = "You opened the recognizer! Now you can point the camera at an object for recognition.";
+                        mTextToSpeech.speak(textToSpeech, TextToSpeech.QUEUE_FLUSH, null, "id1");
+                    }
+                } else {
+                    Log.e("TextToSpeech", "Initialization failed");
+                    mIsInit = false;
+                }
+            }
+        });
 
         cameraBridgeViewBase.setCvCameraViewListener(new CameraBridgeViewBase.CvCameraViewListener2() {
             @Override
@@ -66,6 +82,8 @@ public class RecognizerActivity extends CameraActivity{
                 Mat out=new Mat();
                 out=objectDetectorClass.recognizeImage(mRgba);
 
+                mTextToSpeech.speak(objectDetectorClass.getPredictedObject(), TextToSpeech.QUEUE_FLUSH, null, "id1");
+
                 return out;
             }
         });
@@ -74,7 +92,7 @@ public class RecognizerActivity extends CameraActivity{
         }
 
         try {
-            objectDetectorClass = new ObjectDetectorClass(getAssets(), "RecognitionModel.tflite", 320);
+            objectDetectorClass = new ObjectDetectorClass(getAssets(), "Recognition_model.tflite", 320);
             Log.d("MainActivity", "Model successfully loaded");
         } catch (IOException e) {
             Log.d("MainActivity", "Model getting some error");
@@ -90,6 +108,20 @@ public class RecognizerActivity extends CameraActivity{
     void getPermission(){
         if(checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
             requestPermissions(new String[]{Manifest.permission.CAMERA}, 101);
+        }
+    }
+    public void onInit(int status) {
+        if (status == TextToSpeech.SUCCESS) {
+            Locale locale = new Locale("en");
+            int result = mTextToSpeech.setLanguage(locale);
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                mIsInit = false;
+            } else {
+                mIsInit = true;
+            }
+        } else {
+            Log.e("TextToSpeech", "Initialization failed");
+            mIsInit = false;
         }
     }
 }
