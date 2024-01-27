@@ -16,6 +16,7 @@ import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -30,6 +31,7 @@ public class RecognizerActivity extends CameraActivity implements TextToSpeech.O
     private ObjectDetectorClass objectDetectorClass;
     private TextToSpeech mTextToSpeech;
     private boolean mIsInit;
+    private int fpsCounter=0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,13 +78,16 @@ public class RecognizerActivity extends CameraActivity implements TextToSpeech.O
             public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
                 mRgba=inputFrame.rgba();
                 mGray=inputFrame.gray();
-                // Before watching this video please watch previous video of loading tensorflow lite model
 
                 // now call that function
                 Mat out=new Mat();
                 out=objectDetectorClass.recognizeImage(mRgba);
+                fpsCounter++;
 
-                mTextToSpeech.speak(objectDetectorClass.getPredictedObject(), TextToSpeech.QUEUE_FLUSH, null, "id1");
+                if ((!mTextToSpeech.isSpeaking()) && (objectDetectorClass.isRecognized())){
+                    mTextToSpeech.speak(objectDetectorClass.getPredictedObject(), TextToSpeech.QUEUE_FLUSH, null, "id1");
+                    fpsCounter=0;
+                }
 
                 return out;
             }

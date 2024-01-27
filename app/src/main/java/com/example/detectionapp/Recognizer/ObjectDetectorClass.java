@@ -45,6 +45,7 @@ public class ObjectDetectorClass {
     private int height=0;
     private  int width=0;
     private String predictedObject;
+    private boolean recognized = true;
 
     ObjectDetectorClass(AssetManager assetManager,String modelPath,int inputSize) throws IOException{
         INPUT_SIZE=inputSize;
@@ -155,6 +156,8 @@ public class ObjectDetectorClass {
             float score_value=(float) Array.get(Array.get(score,0),i);
             // define threshold for score
 
+            recognized = false;
+
             // Here you can change threshold according to your model
             if(score_value>0.88){
                 Object box1=Array.get(Array.get(value,0),i);
@@ -170,6 +173,12 @@ public class ObjectDetectorClass {
                 // string of class name of object  // starting point                         // color of text           // size of text
                 predictedObject = labelList.get((int) class_value);
                 Imgproc.putText(rotated_mat_image,predictedObject,new Point(left,top),3,1,new Scalar(255, 0, 0, 255),2);
+                recognized = true;
+                break;
+            }
+            if (!recognized) {
+                // Set recognized to false if no object is detected with confidence > 0.88
+                recognized = false;
             }
 
         }
@@ -227,5 +236,9 @@ public class ObjectDetectorClass {
 
     public String getPredictedObject() {
         return predictedObject;
+    }
+
+    public boolean isRecognized() {
+        return recognized;
     }
 }
