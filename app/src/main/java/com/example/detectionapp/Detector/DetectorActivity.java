@@ -1,4 +1,4 @@
-package com.example.detectionapp.Recognizer;
+package com.example.detectionapp.Detector;
 
 
 import androidx.annotation.Nullable;
@@ -16,14 +16,13 @@ import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-public class RecognizerActivity extends CameraActivity implements TextToSpeech.OnInitListener{
+public class DetectorActivity extends CameraActivity implements TextToSpeech.OnInitListener{
 
     private Mat mRgba;
     private Mat mGray;
@@ -36,7 +35,7 @@ public class RecognizerActivity extends CameraActivity implements TextToSpeech.O
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recognizer);
+        setContentView(R.layout.activity_detector);
 
         getPermission();
 
@@ -52,7 +51,7 @@ public class RecognizerActivity extends CameraActivity implements TextToSpeech.O
                         mIsInit = false;
                     } else {
                         mIsInit = true;
-                        String textToSpeech = "You opened the recognizer! Now you can point the camera at an object for recognition.";
+                        String textToSpeech = "You opened the detector! Now you can point the camera at an object for detection.";
                         mTextToSpeech.speak(textToSpeech, TextToSpeech.QUEUE_FLUSH, null, "id1");
                     }
                 } else {
