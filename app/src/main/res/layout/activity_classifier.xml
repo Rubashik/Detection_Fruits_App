@@ -47,7 +47,7 @@
             android:text="Take Picture"
             android:background="@drawable/button_background"
             android:textAllCaps="false"
-            android:textSize="21sp"
+            android:textSize="28sp"
             android:textStyle="bold" />
 
         <Button
@@ -57,7 +57,7 @@
             android:text="Launch Gallery"
             android:textAllCaps="false"
             android:background="@drawable/button_background"
-            android:textSize="21sp"
+            android:textSize="28sp"
             android:textStyle="bold"
             android:layout_weight="1" />
     </LinearLayout>
